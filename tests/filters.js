@@ -524,6 +524,34 @@ test("Test that linebreaksbr converts all newlines to br elements", mocktimeout(
     })
 )
 
+test("Test that linebreaksbr escapes input html", mocktimeout(function(assert) {
+  var text = "<h1>Hi there</h1>\n\nI am new\n to world\n\n<b>Enjoying time very much.</b>"
+    , pl = new plate.Template(
+        "{{ text|linebreaksbr }}"
+      )
+    , context = { text: text }
+
+  var expected = '&lt;h1&gt;Hi there&lt;/h1&gt;<br /><br />I am new<br /> to world<br /><br />&lt;b&gt;Enjoying time very much.&lt;/b&gt;'
+
+  tpl.render(context, function(err, data) {
+    assert.equal(data, expected)
+  })
+}))
+
+test("Test that linebreaksbr does not escape safe input html", mocktimeout(function(assert) {
+  var text = String("<h1>Hi there</h1>\n\nI am new\n to world\n\n<b>Enjoying time very much.</b>")
+    , tpl = new plate.Template(
+        "{{ text|safe|linebreaksbr }}"
+      )
+    , context = { text: text }
+
+  var expected = '<h1>Hi there</h1><br /><br />I am new<br /> to world<br /><br /><b>Enjoying time very much.</b>'
+
+  tpl.render(context, function(err, data) {
+    assert.equal(data, expected)
+  })
+}))
+
 test("Test that linenumbers prepends line numbers to each line of input text.", mocktimeout(function(assert) {
       
       var text = "Yes\nI\nLike\nJavascript\nIs\nVery\nGood",
